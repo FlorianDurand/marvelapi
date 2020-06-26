@@ -1,5 +1,5 @@
 {
-  "name": "yves-delorme-H4",
+  "name": "Marvel API test",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
@@ -10,25 +10,20 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/EaudeJavel/yves-delorme-H4.git"
+    "url": "git+..."
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
-  "bugs": {
-    "url": "https://github.com/EaudeJavel/yves-delorme-H4/issues"
-  },
-  "homepage": "https://github.com/EaudeJavel/yves-delorme-H4#readme",
   "dependencies": {
     "@zeit/next-sass": "^1.0.1",
     "crypto-js": "^4.0.0",
-    "html2canvas": "^1.0.0-rc.5",
     "isomorphic-unfetch": "^3.0.0",
     "next": "^9.4.4",
     "node-sass": "^4.14.1",
     "prop-types": "^15.7.2",
     "react": "^16.13.1",
-    "react-dom": "^16.13.1",
+    "react-dom": "^16.13.1"
   },
   "devDependencies": {
     "babel-eslint": "^10.1.0",
