@@ -19,4 +19,8 @@ module.exports = withSass({
     });
     return config;
   },
+  env: {
+    PUBLIC_KEY: process.env.PUBLIC_KEY,
+    PRIV_KEY: process.env.PRIV_KEY,
+  },
 });
