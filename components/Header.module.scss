@@ -1,0 +1,14 @@
+.header {
+	width: 70%;
+	display: flex;
+	a {
+		color: #A9A9A9;
+		text-decoration: none;
+		transition: .5s all;
+		font-family: Helvetica, Arial, sans-serif;
+
+		&:hover {
+			color: #676767;
+		}
+	}
+}

@@ -1,0 +1,29 @@
+.header {
+  display: inline-flex;
+  justify-content: space-between;
+  align-items: center;
+  box-sizing: border-box;
+  width: 80%;
+  padding: 0 10%;
+
+  input {
+    border : 1px solid #000;
+    border-radius: 5px;
+    padding: 2px 5px;
+  }
+}
+
+.list {
+  display: flex;
+  flex-wrap: wrap;
+  width: 80%;
+  margin: 5vh auto 0 auto;
+  li {
+    width: 20%;
+    margin: 10px;
+    list-style-type: none;
+  }
+  p {
+    margin: 0;
+  }
+}

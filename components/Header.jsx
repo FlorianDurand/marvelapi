@@ -1,8 +1,8 @@
 import Link from 'next/link';
-// import styles from './Header.module.scss';
+import styles from './Header.module.scss';
 
 const Header = () => (
-  <div>
+  <div className={styles.header}>
     <Link href="/">
       <a>Go back to home page</a>
     </Link>
