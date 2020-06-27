@@ -9,6 +9,14 @@ module.exports = withSass({
   },
   webpack(config) {
     config.resolve.alias['@'] = path.resolve(__dirname);
+    config.module.rules.push({
+      enforce: 'pre',
+      test: /.scss$/,
+      loader: 'sass-resources-loader',
+      options: {
+        resources: ['./styles/index.scss'],
+      },
+    });
     return config;
   },
   env: {

@@ -1,11 +1,88 @@
-import React, { useState, useEffect } from 'react';
+import React, {
+  useState, useEffect, useRef, useCallback,
+} from 'react';
 import Link from 'next/link';
+import Head from 'next/head';
 import fetch from 'isomorphic-unfetch';
 import CryptoJS from 'crypto-js';
 
-import styles from './Index.module.scss';
+import {
+  AppBar, Typography, InputBase, Toolbar, GridList, GridListTileBar, GridListTile,
+} from '@material-ui/core';
+import { fade, makeStyles } from '@material-ui/core/styles';
 
-const { PRIV_KEY } = process.env;
+import SearchIcon from '@material-ui/icons/Search';
+
+// material UI Template
+const useStyles = makeStyles((theme) => ({
+  menuButton: {
+    marginRight: theme.spacing(2),
+  },
+  title: {
+    flexGrow: 1,
+    display: 'none',
+    [theme.breakpoints.up('sm')]: {
+      display: 'block',
+    },
+  },
+  search: {
+    position: 'relative',
+    borderRadius: theme.shape.borderRadius,
+    backgroundColor: fade(theme.palette.common.white, 0.15),
+    '&:hover': {
+      backgroundColor: fade(theme.palette.common.white, 0.25),
+    },
+    marginLeft: 0,
+    width: '100%',
+    [theme.breakpoints.up('sm')]: {
+      marginLeft: theme.spacing(1),
+      width: 'auto',
+    },
+  },
+  searchIcon: {
+    padding: theme.spacing(0, 2),
+    height: '100%',
+    position: 'absolute',
+    pointerEvents: 'none',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  inputRoot: {
+    color: 'inherit',
+  },
+  inputInput: {
+    padding: theme.spacing(1, 1, 1, 0),
+    // vertical padding + font size from searchIcon
+    paddingLeft: `calc(1em + ${theme.spacing(4)}px)`,
+    transition: theme.transitions.create('width'),
+    width: '100%',
+    [theme.breakpoints.up('sm')]: {
+      width: '12ch',
+      '&:focus': {
+        width: '20ch',
+      },
+    },
+  },
+  list: {
+    display: 'flex',
+    flexWrap: 'wrap',
+    flexGrow: 1,
+    justifyContent: 'space-around',
+    backgroundColor: theme.palette.background.paper,
+  },
+  gridList: {
+    width: '65%',
+    minHeight: '95vh',
+    overflow: 'visible',
+  },
+  loading: {
+    width: '100%',
+    flexGrow: 2,
+  },
+}));
+
+const { PRIV_KEY } = process.env;// next does not allowed process.env to be destructured
 const { PUBLIC_KEY } = process.env;
 
 const ts = new Date().getTime();
@@ -14,67 +91,105 @@ let offset = 0;
 let url = `http://gateway.marvel.com/v1/public/characters?offset=${offset}ts=${ts}&apikey=${PUBLIC_KEY}&hash=${hash}`;
 
 const Index = () => {
+  const [loader] = useHookWithRefCallback();
   const [loaded, setLoaded] = useState(false);
-  const [people, setPeople] = useState();
-  const [filtered, setFiltered] = useState(Array);
-
-  const handleScroll = () => {
-    const scroll = document.getElementById('blue').getBoundingClientRect();
-    if (scroll.bottom < scroll.height) {
-      offset += 20;
-      url = `http://gateway.marvel.com/v1/public/characters?offset=${offset}ts=${ts}&apikey=${PUBLIC_KEY}&hash=${hash}`;
-      console.log(url);
-    }
-  };
-  useEffect(() => {
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
-  });
+  const [people, setPeople] = useState([]);
+  const [filtered, setFiltered] = useState();
+  const [update, setUpdate] = useState();
+  let itemsToShow;
 
   const characters = async () => {
     const { data: { results } } = await (await fetch(url)).json();
-    setPeople(results);
+    setPeople([...people, ...results]);
     setLoaded(true);
   };
+
   useEffect(() => {
     characters();
-  }, []);
+  }, [update]);
+  const classes = useStyles();
 
   if (!loaded) return <div>Loading.............</div>;
-  let itemsToShow = [];
-  itemsToShow.push(...people);
-  if (filtered.length >= 1) { itemsToShow = filtered; }
 
   function handleSearchChange({ target: { value } }) {
     setFiltered(value
-      ? itemsToShow.filter((item) => {
+      ? people.filter((item) => {
         const lc = item.name.toLowerCase();
         const filter = value.toLowerCase();
 
         return lc.includes(filter);
       })
-      : people);
+      : false);
   }
-
+  if (filtered) itemsToShow = filtered; else itemsToShow = people;
   return (
     <div>
-      <div className={styles.header}>
-        <p>List of characters</p>
-        <input type="search" placeholder="Rechercher..." onChange={handleSearchChange} />
+      <Head>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&display=swap" />
+        <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons" />
+        <meta
+          name="viewport"
+          content="minimum-scale=1, initial-scale=1, width=device-width"
+        />
+      </Head>
+      <AppBar position="sticky">
+        <Toolbar>
+          <Typography className={classes.title} variant="h3" noWrap>
+            Marvel's characters
+          </Typography>
+          <div className={classes.search}>
+            <div className={classes.searchIcon}>
+              <SearchIcon />
+            </div>
+            <InputBase
+              placeholder="Search…"
+              classes={{
+                root: classes.inputRoot,
+                input: classes.inputInput,
+              }}
+              inputProps={{ 'aria-label': 'search' }}
+              onChange={handleSearchChange}
+            />
+          </div>
+        </Toolbar>
+      </AppBar>
+      <div className={classes.list}>
+        <GridList cellHeight={250} className={classes.gridList} cols={3}>
+          {itemsToShow.map((character, index) => (
+            <GridListTile key={index}>
+              <Link href={`/character/${character.id}`}>
+                <a>
+                  <img src={`${character.thumbnail.path}/landscape_incredible.${character.thumbnail.extension}`} alt={character.name} />
+                  <GridListTileBar title={character.name} />
+                </a>
+              </Link>
+            </GridListTile>
+          ))}
+        </GridList>
       </div>
-      <div className={styles.list}>
-        {itemsToShow.map((character, index) => (
-          <li key={index}>
-            <Link href={`/character/${character.id}`}>
-              <a>
-                <p>{character.name}</p>
-                <img src={`${character.thumbnail.path}/portrait_medium.${character.thumbnail.extension}`} alt="" />
-              </a>
-            </Link>
-          </li>
-        ))}
-      </div>
+      <div ref={loader} className={classes.loading}>Loading...</div>
     </div>
   );
+
+  function useHookWithRefCallback() {
+    const ref = useRef(null);
+    const setRef = useCallback((node) => {
+      ref.current = node;
+
+      const observer = new IntersectionObserver(((observables) => {
+        observables.forEach((observable) => {
+          if (observable.intersectionRatio > 0.5) {
+            offset += 20;
+            url = `http://gateway.marvel.com/v1/public/characters?offset=${offset}ts=${ts}&apikey=${PUBLIC_KEY}&hash=${hash}`;
+            setUpdate(offset);
+          }
+        });
+      }), { threshold: [0.5] });
+
+      observer.observe(ref.current);
+    }, []);
+
+    return [setRef];
+  }
 };
 export default Index;
