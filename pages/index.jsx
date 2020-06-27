@@ -30,26 +30,39 @@ const Index = () => {
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
   });
+
   const characters = async () => {
-    const res = await fetch(url);
-    const data = await res.json();
-    setPeople(data);
+    const { data: { results } } = await (await fetch(url)).json();
+    setPeople(results);
     setLoaded(true);
   };
   useEffect(() => {
     characters();
   }, []);
+
   if (!loaded) return <div>Loading.............</div>;
   let itemsToShow = [];
-  itemsToShow.push(...people.data.results);
+  itemsToShow.push(...people);
   if (filtered.length >= 1) { itemsToShow = filtered; }
+
+  function handleSearchChange({ target: { value } }) {
+    setFiltered(value
+      ? itemsToShow.filter((item) => {
+        const lc = item.name.toLowerCase();
+        const filter = value.toLowerCase();
+
+        return lc.includes(filter);
+      })
+      : people);
+  }
+
   return (
     <div>
       <div className={styles.header}>
         <p>List of characters</p>
         <input type="search" placeholder="Rechercher..." onChange={handleSearchChange} />
       </div>
-      <div id="blue" className={styles.list}>
+      <div className={styles.list}>
         {itemsToShow.map((character, index) => (
           <li key={index}>
             <Link href={`/character/${character.id}`}>
@@ -63,25 +76,5 @@ const Index = () => {
       </div>
     </div>
   );
-
-  function handleSearchChange(e) {
-    let currentList = [];
-
-    let newList = [];
-    // If the search bar isn't empty
-    if (e.target.value !== '') {
-      currentList = itemsToShow;
-      newList = currentList.filter((item) => {
-        const lc = item.name.toLowerCase();
-        const filter = e.target.value.toLowerCase();
-
-        return lc.includes(filter);
-      });
-    } else {
-      // If the search bar is empty, set newList to original task list
-      newList = people.data.results;
-    }
-    setFiltered(newList);
-  }
 };
 export default Index;

@@ -3,9 +3,9 @@ import { useRouter } from 'next/router';
 import fetch from 'isomorphic-unfetch';
 import CryptoJS from 'crypto-js';
 
-import Header from '../../components/Header';
+import Header from '@/components/Header';
 
-const { PRIV_KEY } = process.env;
+const { PRIV_KEY } = process.env;// next does not allowed process.env to be destructured
 const { PUBLIC_KEY } = process.env;
 
 const ts = new Date().getTime();
@@ -19,18 +19,17 @@ const characterPage = () => {
   const url = `http://gateway.marvel.com/v1/public/characters/${id}?ts=${ts}&apikey=${PUBLIC_KEY}&hash=${hash}`;
 
   const characters = async () => {
-    const res = await fetch(url);
-    const data = await res.json();
-    setCharacter(data.data.results[0]);
+    const { data: { results } } = await (await fetch(url)).json();
+    setCharacter(results[0]);
     setLoaded(true);
   };
 
   useEffect(() => {
-    id ? characters() : null;
+    if (id) characters();
   }, [id]);
 
   if (!loaded) return <div>Loading.............</div>;
-  console.log(character);
+
   const {
     name, description, comics, series, stories, thumbnail,
   } = character;
@@ -82,5 +81,5 @@ const characterPage = () => {
     </div>
   );
 };
-
+// composant, index
 export default characterPage;
