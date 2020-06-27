@@ -4,6 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
+    "test": "cypress open",
     "dev": "next",
     "build": "next build",
     "start": "next start"
@@ -30,6 +31,7 @@
   "devDependencies": {
     "babel-eslint": "^10.1.0",
     "babel-plugin-module-resolver": "^4.0.0",
+    "cypress": "^4.9.0",
     "eslint": "^6.8.0",
     "eslint-config-airbnb": "^18.2.0",
     "eslint-import-resolver-babel-module": "^5.1.2",
