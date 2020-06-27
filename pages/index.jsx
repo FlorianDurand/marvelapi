@@ -91,12 +91,34 @@ let offset = 0;
 let url = `http://gateway.marvel.com/v1/public/characters?offset=${offset}ts=${ts}&apikey=${PUBLIC_KEY}&hash=${hash}`;
 
 const Index = () => {
-  const [loader] = useHookWithRefCallback();
   const [loaded, setLoaded] = useState(false);
   const [people, setPeople] = useState([]);
   const [filtered, setFiltered] = useState();
   const [update, setUpdate] = useState();
   let itemsToShow;
+
+  function useHookWithRefCallback() {
+    const ref = useRef(null);
+    const setRef = useCallback((node) => {
+      ref.current = node;
+
+      const observer = new IntersectionObserver(((observables) => {
+        observables.forEach((observable) => {
+          if (observable.intersectionRatio > 0.5) {
+            offset += 20;
+            url = `http://gateway.marvel.com/v1/public/characters?offset=${offset}ts=${ts}&apikey=${PUBLIC_KEY}&hash=${hash}`;
+            setUpdate(offset);
+          }
+        });
+      }), { threshold: [0.5] });
+
+      observer.observe(ref.current);
+    }, []);
+
+    return [setRef];
+  }
+
+  const [loader] = useHookWithRefCallback();
 
   const characters = async () => {
     const { data: { results } } = await (await fetch(url)).json();
@@ -126,16 +148,16 @@ const Index = () => {
     <div>
       <Head>
         <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&display=swap" />
-        <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons" />
         <meta
           name="viewport"
           content="minimum-scale=1, initial-scale=1, width=device-width"
         />
       </Head>
+
       <AppBar position="sticky">
         <Toolbar>
           <Typography className={classes.title} variant="h3" noWrap>
-            Marvel's characters
+            Marvel&apos;s characters
           </Typography>
           <div className={classes.search}>
             <div className={classes.searchIcon}>
@@ -153,6 +175,7 @@ const Index = () => {
           </div>
         </Toolbar>
       </AppBar>
+
       <div className={classes.list}>
         <GridList cellHeight={250} className={classes.gridList} cols={3}>
           {itemsToShow.map((character, index) => (
@@ -167,29 +190,9 @@ const Index = () => {
           ))}
         </GridList>
       </div>
+
       <div ref={loader} className={classes.loading}>Loading...</div>
     </div>
   );
-
-  function useHookWithRefCallback() {
-    const ref = useRef(null);
-    const setRef = useCallback((node) => {
-      ref.current = node;
-
-      const observer = new IntersectionObserver(((observables) => {
-        observables.forEach((observable) => {
-          if (observable.intersectionRatio > 0.5) {
-            offset += 20;
-            url = `http://gateway.marvel.com/v1/public/characters?offset=${offset}ts=${ts}&apikey=${PUBLIC_KEY}&hash=${hash}`;
-            setUpdate(offset);
-          }
-        });
-      }), { threshold: [0.5] });
-
-      observer.observe(ref.current);
-    }, []);
-
-    return [setRef];
-  }
 };
 export default Index;

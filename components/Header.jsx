@@ -1,11 +1,16 @@
 import Link from 'next/link';
 
-const Header = () => (
-  <div>
+import Typography from '@material-ui/core/Typography';
+import Breadcrumbs from '@material-ui/core/Breadcrumbs';
+import LinkStyle from '@material-ui/core/Link';
+
+const Header = (props) => (
+  <Breadcrumbs aria-label="breadcrumb">
     <Link href="/">
-      <a>Go back to home page</a>
+      <LinkStyle color="inherit">Characters</LinkStyle>
     </Link>
-  </div>
+    <Typography color="textPrimary">{props.name}</Typography>
+  </Breadcrumbs>
 );
 
 export default Header;
