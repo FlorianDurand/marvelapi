@@ -164,7 +164,7 @@ const Index = () => {
               <SearchIcon />
             </div>
             <InputBase
-              placeholder="Search…"
+              placeholder="Filter....."
               classes={{
                 root: classes.inputRoot,
                 input: classes.inputInput,
