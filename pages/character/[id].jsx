@@ -19,7 +19,7 @@ const characterPage = () => {
   const { id } = router.query;
   const [character, setCharacter] = useState();
   const [loaded, setLoaded] = useState(false);
-  const url = `http://gateway.marvel.com/v1/public/characters/${id}?ts=${ts}&apikey=${PUBLIC_KEY}&hash=${hash}`;
+  const url = `https://gateway.marvel.com/v1/public/characters/${id}?ts=${ts}&apikey=${PUBLIC_KEY}&hash=${hash}`;
 
   const characters = async () => {
     const { data: { results } } = await (await fetch(url)).json();

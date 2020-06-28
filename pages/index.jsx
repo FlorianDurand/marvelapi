@@ -88,7 +88,7 @@ const { PUBLIC_KEY } = process.env;
 const ts = new Date().getTime();
 const hash = CryptoJS.MD5(ts + PRIV_KEY + PUBLIC_KEY).toString();
 let offset = 0;
-let url = `http://gateway.marvel.com/v1/public/characters?offset=${offset}ts=${ts}&apikey=${PUBLIC_KEY}&hash=${hash}`;
+let url = `https://gateway.marvel.com/v1/public/characters?offset=${offset}ts=${ts}&apikey=${PUBLIC_KEY}&hash=${hash}`;
 
 const Index = () => {
   const [loaded, setLoaded] = useState(false);
@@ -106,7 +106,7 @@ const Index = () => {
         observables.forEach((observable) => {
           if (observable.intersectionRatio > 0.5) {
             offset += 20;
-            url = `http://gateway.marvel.com/v1/public/characters?offset=${offset}ts=${ts}&apikey=${PUBLIC_KEY}&hash=${hash}`;
+            url = `https://gateway.marvel.com/v1/public/characters?offset=${offset}ts=${ts}&apikey=${PUBLIC_KEY}&hash=${hash}`;
             setUpdate(offset);
           }
         });
